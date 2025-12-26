@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/manueldelabra/Documents/Portfolio/MolGrad/tests/main'
+relocations:     []
+...
