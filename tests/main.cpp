@@ -1,5 +1,4 @@
 #include "core/tensor.h"
-#include "core/device.h"
 #include <iostream>
 
 int main() {
