@@ -7,6 +7,6 @@ int main() {
     std::cout << "Filling tensor with 5.0\n";
     t.fill(5.0f);
     t.print();
-    std::cout << "Tensor shape: ";
+    std::cout << "Tensor shape: "<< t.size() << "\n";
     return 0;
 }

@@ -3,19 +3,21 @@
 #include <iostream>
 #include <stdexcept>
 
-Tensor::Tensor(const std::vector<int>& shape, Device device): shape_(shape), device_(device) {
+Tensor::Tensor(const std::vector<int>& shape, Device device, Dtype dtype): shape_(shape), device_(device), dtype_(dtype) {
 
     if (!device_.is_cpu()) {
         throw std::runtime_error("Only CPU device is supported in this version.");   // CUDA not implemented yet, working in arm64
     }
 
     size_ = 1;
-    for (int d : shape) size_ *= d;
 
-    data_ = std::make_unique<float[]>(size_);
-    std::fill(data_.get(), data_.get() + size_, 0.0f);
+    for (int d : shape) size_ *= d; // Total size to allocate
 
-    compute_strides();
+    data_ = std::make_unique<float[]>(size_);    // Allocate memory
+
+    std::fill(data_.get(), data_.get() + size_, 0.0f);  // Initialize to zero
+
+    compute_strides();  // Calculate strides automatically
 }
 
 float* Tensor::data() {
@@ -27,7 +29,7 @@ const float* Tensor::data() const {
 }
 
 int Tensor::ndim() const {
-    return shape_.size();
+    return shape_.size(); 
 }
 
 int Tensor::size() const {
