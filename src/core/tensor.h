@@ -8,15 +8,24 @@ class Tensor {
 public: 
     Tensor(const std::vector<int>& shape, Device device = Device(), Dtype dtype = Dtype::Float32);
 
-    float* data();
-    const float* data() const;
-
     int ndim() const;  // Number of dimensions
-    int size() const;
+    int size() const;  // Total number of elements
     const std::vector<int>& shape() const;
 
-    void fill(float value);    // Fill tensor with a specific value
-    void print();
+    Dtype dtype() const;
+    Device device() const;
+
+    void* raw_data();
+    const void* raw_data() const;
+
+    template<typename T>
+    T* data();
+
+    template<typename T>
+    const T* data() const;
+
+    void fill_double(double value);    // Fill tensor with a specific value
+    void print();               // Print tensor details
 
 private:
     void compute_strides();
@@ -29,6 +38,5 @@ private:
     Device device_;
     Dtype dtype_;
 
-    std::unique_ptr<float[]> data_;
-
+    std::unique_ptr<unsigned char[]> buffer_;
 };
