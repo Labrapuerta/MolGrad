@@ -3,89 +3,66 @@
 #include <iostream>
 #include <stdexcept>
 
-Tensor::Tensor(const std::vector<int>& shape, Device device, Dtype dtype): shape_(shape), device_(device), dtype_(dtype) {
+// Constructor that allocates new storage
+Tensor::Tensor(const std::vector<int>& shape, Dtype dtype, Device device): shape_(shape), dtype_(dtype), offset_(0) {
 
-    if (!device_.is_cpu()) throw std::runtime_error("Only CPU device is supported in this version.");   // CUDA not implemented yet, working in arm64
+    if (shape_.empty()) throw std::runtime_error("Tensor shape cannot be empty");   // Validate shape
 
-    size_ = 1;
+    size_t elements = 1;
+    for (int d : shape_) elements *= d; // Total size to allocateb
 
-    for (int d : shape) size_ *= d; // Total size to allocate
-
-    size_t bytes = size_ * dtype_size(dtype_);   // Calculate total bytes needed function in dtype.h
-    buffer_ = std::make_unique<unsigned char[]>(bytes);  // Allocate raw memory 
-    std::memset(buffer_.get(), 0, bytes); // Initialize to zero 
-
-    compute_strides();  // Calculate strides automatically
+    size_t bytes = elements * dtype_size(dtype_);   // Calculate total bytes needed
+    storage_ = std::make_shared<Storage>(bytes, device);  // Allocate storage
+    compute_contiguous_strides();  // Calculate strides automatically
 }
 
-int Tensor::ndim() const {
-    return shape_.size();    // Number of dimensions
+// Constructor from existing storage
+Tensor::Tensor(std::shared_ptr<Storage> storage, size_t offset, 
+               const std::vector<int>& shape,
+               const std::vector<int>& strides,
+               Dtype dtype)
+    : storage_(storage), offset_(offset), shape_(shape), strides_(strides), dtype_(dtype) {
+
+        if (!storage_) throw std::runtime_error("Storage pointer cannot be null");
+
+        if (shape_.size() != strides_.size()) throw std::runtime_error("Shape and strides must have the same number of dimensions");
 }
 
-int Tensor::size() const {
-    return size_;   // Total number of elements
-}
 
-const std::vector<int>& Tensor::shape() const {
-    return shape_;    // Return shape vector
-}
-
-Dtype Tensor::dtype() const {
-    return dtype_;  // Return data type
-}
-
-Device Tensor::device() const {
-    return device_; // Return device
-}
-
-void* Tensor::raw_data() {
-    return buffer_.get();   // Return raw data pointer
-}
-
-const void* Tensor::raw_data() const {
-    return buffer_.get();       // Return const raw data pointer
-}
-
-template<typename T>
-T* Tensor::data() {
-    return reinterpret_cast<T*>(buffer_.get());   // Cast raw data to typed pointer
-}
-template<typename T>
-const T* Tensor::data() const {
-    return reinterpret_cast<const T*>(buffer_.get()); // Cast raw data to const typed pointer
-}
-
-void Tensor::fill_double(double value) {
-    if (dtype_ == Dtype::Float32) {
-        float* ptr = data<float>();
-        for (int i = 0; i < size_; ++i) ptr[i] = static_cast<float>(value);
-    } else if (dtype_ == Dtype::Float64) {
-        double* ptr = data<double>();
-        for (int i = 0; i < size_; ++i) ptr[i] = value;
-    } else {
-        throw std::runtime_error("fill not supported for this dtype");
-    }
-}
-
-void Tensor::compute_strides() {
+void Tensor::compute_contiguous_strides() {
     strides_.resize(shape_.size());
     int stride = 1;
-    for (int i = shape_.size() - 1; i >= 0; --i) {
+    for (int i = static_cast<int>(shape_.size()) - 1; i >= 0; --i){
         strides_[i] = stride;
         stride *= shape_[i];
     }
 }
 
-void Tensor::print() {
-    std::cout << "Tensor shape: [ ";
-    for (int s : shape_) std::cout << s << " ";
-    std::cout << "]\n";
-    for (float v : std::vector<float>(data<float>(), data<float>() + size_)) {
-        std::cout << v << " ";
-    }
-    std::cout << "\n";
-    std::cout << "Dtype: " << dtype_to_string(dtype_) << "\n";
-    std::cout << "Device: " << (device_.is_cpu() ? "CPU" : "CUDA") << "\n";
-    std::cout << "\n";
+void* Tensor::raw_data() {
+    return static_cast<char*>(storage_ -> data()) + offset_ ;   // Return raw data pointer
 }
+
+const void* Tensor::raw_data() const {
+    return static_cast<const char*>(storage_ -> data()) + offset_ ;       // Return const raw data pointer
+}
+
+template<typename T>
+T* Tensor::data() {
+    return reinterpret_cast<T*>(raw_data()); // Return typed data pointer
+}
+
+template<typename T>
+const T* Tensor::data() const {
+    return reinterpret_cast<const T*>(raw_data()); // Return const typed data pointer
+}
+
+// Explicit template instantiations
+template float* Tensor::data<float>();
+template float const* Tensor::data<float>() const;
+
+size_t Tensor::numel() const {
+    return std::accumulate(shape_.begin(), shape_.end(), 1, std::multiplies<int>()); // Total number of elements
+}
+
+
 

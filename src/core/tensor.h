@@ -1,19 +1,21 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "device.h"
-#include "dtype.h"
+#include "core/device.h"
+#include "core/dtype.h"
+#include "core/storage.h"
+
 
 class Tensor {
 public: 
-    Tensor(const std::vector<int>& shape, Device device = Device(), Dtype dtype = Dtype::Float32);
+    // Root constructor, allocates new storage
+    Tensor(const std::vector<int>& shape, Dtype dtype = Dtype::Float32, Device device = Device());  // basic constructor
 
-    int ndim() const;  // Number of dimensions
-    int size() const;  // Total number of elements
-    const std::vector<int>& shape() const;
-
-    Dtype dtype() const;
-    Device device() const;
+    // Constructor from existing storage (no allocation)
+    Tensor(std::shared_ptr<Storage> storage, size_t offset, 
+            const std::vector<int>& shape,
+            const std::vector<int>& strides,
+            Dtype dtype); 
 
     void* raw_data();
     const void* raw_data() const;
@@ -24,19 +26,28 @@ public:
     template<typename T>
     const T* data() const;
 
-    void fill_double(double value);    // Fill tensor with a specific value
-    void print();               // Print tensor details
+    // Metadata 
+
+    const std::vector<int>& shape() const {return shape_;}    // Return shape vector
+    const std::vector<int>& strides() const {return strides_;} // Return strides vector
+    Dtype dtype() const {return dtype_;}  // Return data type
+    Device device() const {return storage_ -> device();} // Return device from storage
+    std::shared_ptr<Storage> storage() const {return storage_;} // Return underlying storage
+
+    size_t numel() const;
 
 private:
-    void compute_strides();
+    void compute_contiguous_strides();
 
 private:
-    std::vector<int> shape_;
+    std::shared_ptr<Storage> storage_; // Underlying storage
+    size_t offset_; // Offset in storage
+
+
+    std::vector<int> shape_; 
     std::vector<int> strides_;
-    int size_; // Total number of elements
 
-    Device device_;
     Dtype dtype_;
 
-    std::unique_ptr<unsigned char[]> buffer_;
+
 };

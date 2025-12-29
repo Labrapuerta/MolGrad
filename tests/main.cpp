@@ -3,17 +3,17 @@
 #include <cassert>
 
 int main() {
-    Tensor t({7,2, 3}, DeviceType::CPU, Dtype::Float32);
-    t.fill_double(1.5);
-    float* p = t.data<float>();
-    for (int i = 0; i < t.size(); ++i)
-        assert(p[i] == 1.5f);
+    Tensor x({4, 2});
+    auto p = x.data<float>();
+    p[0] = 1;
 
-    Tensor b({4}, DeviceType::CPU, Dtype::Float64);
-    b.fill_double(2.0);
-    double* q = b.data<double>();
-    assert(q[0] == 2.0);
+    Tensor y(x.storage(), 4 * sizeof(float), {2}, {1}, Dtype::Float32);
 
-    std::cout << "Tensor tests passed\n";
-    return 0;
+    std::cout << "Memory address x: " << x.raw_data() << std::endl;
+    std::cout << "Memory address y: " << y.raw_data() << std::endl;
+
+
+    y.data<float>()[0] = 99;
+
+    // x = [1, ?, 99, ?]
 }
