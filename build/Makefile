@@ -166,6 +166,30 @@ src/core/device.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/core/device.cpp.s
 .PHONY : src/core/device.cpp.s
 
+src/core/storage.o: src/core/storage.cpp.o
+.PHONY : src/core/storage.o
+
+# target to build an object file
+src/core/storage.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/core/storage.cpp.o
+.PHONY : src/core/storage.cpp.o
+
+src/core/storage.i: src/core/storage.cpp.i
+.PHONY : src/core/storage.i
+
+# target to preprocess a source file
+src/core/storage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/core/storage.cpp.i
+.PHONY : src/core/storage.cpp.i
+
+src/core/storage.s: src/core/storage.cpp.s
+.PHONY : src/core/storage.s
+
+# target to generate assembly for a file
+src/core/storage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/core/storage.cpp.s
+.PHONY : src/core/storage.cpp.s
+
 src/core/tensor.o: src/core/tensor.cpp.o
 .PHONY : src/core/tensor.o
 
@@ -227,6 +251,9 @@ help:
 	@echo "... src/core/device.o"
 	@echo "... src/core/device.i"
 	@echo "... src/core/device.s"
+	@echo "... src/core/storage.o"
+	@echo "... src/core/storage.i"
+	@echo "... src/core/storage.s"
 	@echo "... src/core/tensor.o"
 	@echo "... src/core/tensor.i"
 	@echo "... src/core/tensor.s"
