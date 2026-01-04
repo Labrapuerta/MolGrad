@@ -16,7 +16,9 @@ public:
             const std::vector<int>& shape,
             const std::vector<int>& strides,
             Dtype dtype); 
-
+    
+    Tensor slice(int dim, int start, int end) const;
+    
     void* raw_data();
     const void* raw_data() const;
 

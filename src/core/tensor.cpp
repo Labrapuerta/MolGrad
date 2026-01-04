@@ -28,7 +28,6 @@ Tensor::Tensor(std::shared_ptr<Storage> storage, size_t offset,
         if (shape_.size() != strides_.size()) throw std::runtime_error("Shape and strides must have the same number of dimensions");
 }
 
-
 void Tensor::compute_contiguous_strides() {
     strides_.resize(shape_.size());
     int stride = 1;
@@ -37,6 +36,26 @@ void Tensor::compute_contiguous_strides() {
         stride *= shape_[i];
     }
 }
+
+Tensor Tensor::slice(int dim, int start, int end) const {
+    // Validate inputs
+    if (dim < 0 || dim >= shape_.size()) throw std::runtime_error("slice: invalid dimension");
+
+    if (start < 0 || end > shape_[dim] || start >= end) throw std::runtime_error("slice: invalid range");
+
+    std::vector<int> new_shape = shape_;
+    new_shape[dim] = end - start;
+
+    // Compute new offset
+    size_t element_offset = start * strides_[dim];
+    size_t byte_offset = element_offset * dtype_size(dtype_);
+    size_t new_offset = offset_ + byte_offset;
+
+
+
+    return Tensor(storage_, new_offset, new_shape, strides_, dtype_);
+}
+
 
 void* Tensor::raw_data() {
     return static_cast<char*>(storage_ -> data()) + offset_ ;   // Return raw data pointer

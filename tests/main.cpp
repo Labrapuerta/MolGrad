@@ -4,16 +4,27 @@
 
 int main() {
     Tensor x({4, 2});
-    auto p = x.data<float>();
-    p[0] = 1;
+    auto px = x.data<float>();
 
-    Tensor y(x.storage(), 4 * sizeof(float), {2}, {1}, Dtype::Float32);
+    for (int i = 0; i < 8; ++i)
+        px[i] = i;
 
-    std::cout << "Memory address x: " << x.raw_data() << std::endl;
-    std::cout << "Memory address y: " << y.raw_data() << std::endl;
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            std::cout << px[i * 2 + j] << " ";
+        }
+        std::cout << "\n";
+    }
 
+    Tensor y = x.slice(0, 1, 3);
+
+    std::cout << "x raw: " << x.raw_data() << "\n";
+    std::cout << "y raw: " << y.raw_data() << "\n";
+
+
+    std::cout << y.data<float>()[0] << "\n";  // should print x[1][0]
 
     y.data<float>()[0] = 99;
+    std::cout << x.data<float>()[2] << "\n";  // 99
 
-    // x = [1, ?, 99, ?]
 }
