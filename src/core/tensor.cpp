@@ -51,11 +51,23 @@ Tensor Tensor::slice(int dim, int start, int end) const {
     size_t byte_offset = element_offset * dtype_size(dtype_);
     size_t new_offset = offset_ + byte_offset;
 
-
-
     return Tensor(storage_, new_offset, new_shape, strides_, dtype_);
 }
 
+float& Tensor::operator()(const std::vector<int>& indices) {
+    size_t offset = compute_offset(indices);
+    return *(reinterpret_cast<float*>(static_cast<char*>(storage_->data()) + offset));
+}
+
+size_t Tensor::compute_offset(const std::vector<int>& indices) const {
+    if (indices.size() != shape_.size()) throw std::runtime_error("compute_offset: indices size must match number of dimensions");
+    size_t offset = offset_;
+    for (size_t i = 0; i < indices.size(); ++i) {
+        if (indices[i] < 0 || indices[i] >= shape_[i]) throw std::runtime_error("compute_offset: index out of bounds");
+        offset += indices[i] * strides_[i] * dtype_size(dtype_);
+    }
+    return offset;
+}
 
 void* Tensor::raw_data() {
     return static_cast<char*>(storage_ -> data()) + offset_ ;   // Return raw data pointer

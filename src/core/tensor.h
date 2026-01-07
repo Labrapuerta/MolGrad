@@ -17,8 +17,33 @@ public:
             const std::vector<int>& strides,
             Dtype dtype); 
     
-    Tensor slice(int dim, int start, int end) const;
+    Tensor slice(int dim, int start, int end) const;  // Slice tensor along a dimension
+
+    float & operator()(const std::vector<int>& indices); // Returns value at given index, always as a float  **
     
+    // Typed accessors
+    template<typename T>
+    T& at(const std::vector<int>& indices) {
+        if (dtype_ != dtype_of<T>())
+            throw std::runtime_error("dtype mismatch");
+
+        size_t offset = compute_offset(indices);
+        return *reinterpret_cast<T*>(
+            static_cast<unsigned char*>(storage_->data()) + offset
+        );
+    }
+
+    template<typename T>
+    const T& at(const std::vector<int>& indices) const {
+        if (dtype_ != dtype_of<T>())
+            throw std::runtime_error("dtype mismatch");
+
+        size_t offset = compute_offset(indices);
+        return *reinterpret_cast<const T*>(
+            static_cast<unsigned char*>(storage_->data()) + offset
+        );
+    }
+
     void* raw_data();
     const void* raw_data() const;
 
@@ -35,11 +60,15 @@ public:
     Dtype dtype() const {return dtype_;}  // Return data type
     Device device() const {return storage_ -> device();} // Return device from storage
     std::shared_ptr<Storage> storage() const {return storage_;} // Return underlying storage
+    size_t numel() const; // Return number of elements
+    size_t n_dim() const {return shape_.size();} // Return number of dimensions
 
-    size_t numel() const;
+
 
 private:
-    void compute_contiguous_strides();
+    void compute_contiguous_strides(); // Compute strides for contiguous layout
+    size_t compute_offset(const std::vector<int>& indices) const; // Compute offset in bytes for given indices
+
 
 private:
     std::shared_ptr<Storage> storage_; // Underlying storage

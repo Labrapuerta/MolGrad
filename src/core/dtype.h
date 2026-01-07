@@ -30,4 +30,19 @@ inline std::string dtype_to_string(Dtype dt) {
     }
 }
 
+template<typename T>
+constexpr Dtype dtype_of() {
+    if constexpr (std::is_same_v<T, float>) {
+        return Dtype::Float32;
+    } else if constexpr (std::is_same_v<T, double>) {
+        return Dtype::Float64;
+    } else if constexpr (std::is_same_v<T, int32_t>) {
+        return Dtype::Int32;
+    } else if constexpr (std::is_same_v<T, int64_t>) {
+        return Dtype::Int64;
+    } else {
+        static_assert(!sizeof(T), "Unsupported dtype");
+    }
+}
+
 
