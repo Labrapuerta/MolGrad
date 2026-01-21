@@ -25,10 +25,11 @@ MolGrad is a long-term personal research project.
 It is not intended as a production-ready deep learning framework,
 but as a platform for experimentation, learning, and scientific exploration.
 
-[x] Tensor implementation with storage, slices
-[] Basic tensor operations (add, multiply, matmul) in CPU
-[] Python bindings via Pybind11
-[] CPU and CUDA tensor operations
-[] Automatic differentiation engine with backward graph construction
-[] Basic neural network layers and loss functions
-[] Examples in biomolecular structure prediction and analysis
+- [x] Tensor implementation with storage, slices. 
+- [x] Memory management and layout (contiguous, strides, clone).
+- [] Basic tensor operations (add, multiply, matmul) in CPU. 
+- [] Python bindings via Pybind11
+- [] CPU and CUDA tensor operations
+- [] Automatic differentiation engine with backward graph construction
+- [] Basic neural network layers and loss functions
+- [] Examples in biomolecular structure prediction and analysis
