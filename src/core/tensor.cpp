@@ -54,6 +54,41 @@ Tensor Tensor::slice(int dim, int start, int end) const {
     return Tensor(storage_, new_offset, new_shape, strides_, dtype_);
 }
 
+
+///  Apparently, contiguous and clone have very similar implementations 
+
+Tensor Tensor::contiguous() const {
+    if (is_contiguous()) {
+        return *this;  // Already contiguous
+    }
+    return clone();  // Use clone to create a contiguous copy
+}
+
+Tensor Tensor::clone() const {   // clone will always crate a new storage
+    Tensor out(shape_, dtype_, device());   // New tensor with same shape and dtype
+    if (is_contiguous()) {
+        std::cout << "Tensor is contgiuous" << std::endl;
+        size_t bytes = numel() * dtype_size(dtype_);
+        std::memcpy(out.raw_data(), this->raw_data(), bytes);  // Direct copy if both are contiguous
+        return out;
+    }
+    // Non-contiguous copy
+    std::vector<int> idx(shape_.size(), 0);
+    size_t total_elements = numel();
+    for (size_t i = 0; i < total_elements; ++i) {
+        out.at<float>(idx) = this->at<float>(idx);
+        // Increment index
+        for (int d = static_cast<int>(shape_.size()) - 1; d >= 0; --d) {
+            idx[d]++;
+            if (idx[d] < shape_[d]) break;
+            idx[d] = 0;
+        }
+    }
+    return out;
+} 
+
+///
+
 float& Tensor::operator()(const std::vector<int>& indices) {
     size_t offset = compute_offset(indices);
     return *(reinterpret_cast<float*>(static_cast<char*>(storage_->data()) + offset));
@@ -69,6 +104,15 @@ size_t Tensor::compute_offset(const std::vector<int>& indices) const {
     return offset;
 }
 
+bool Tensor::is_contiguous() const {
+    size_t expected_stride = 1;
+    for (int i = static_cast<int>(shape_.size()) - 1; i >= 0; --i) {
+        if (strides_[i] != expected_stride) return false;
+        expected_stride *= shape_[i];
+    }
+    return true;
+}
+
 void* Tensor::raw_data() {
     return static_cast<char*>(storage_ -> data()) + offset_ ;   // Return raw data pointer
 }
@@ -76,20 +120,6 @@ void* Tensor::raw_data() {
 const void* Tensor::raw_data() const {
     return static_cast<const char*>(storage_ -> data()) + offset_ ;       // Return const raw data pointer
 }
-
-template<typename T>
-T* Tensor::data() {
-    return reinterpret_cast<T*>(raw_data()); // Return typed data pointer
-}
-
-template<typename T>
-const T* Tensor::data() const {
-    return reinterpret_cast<const T*>(raw_data()); // Return const typed data pointer
-}
-
-// Explicit template instantiations
-template float* Tensor::data<float>();
-template float const* Tensor::data<float>() const;
 
 size_t Tensor::numel() const {
     return std::accumulate(shape_.begin(), shape_.end(), 1, std::multiplies<int>()); // Total number of elements

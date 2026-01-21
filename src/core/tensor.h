@@ -19,6 +19,10 @@ public:
     
     Tensor slice(int dim, int start, int end) const;  // Slice tensor along a dimension
 
+    Tensor contiguous() const; // Return a contiguous copy of the tensor
+
+    Tensor clone() const; // Return a deep copy of the tensor
+
     float & operator()(const std::vector<int>& indices); // Returns value at given index, always as a float  **
     
     // Typed accessors
@@ -28,9 +32,7 @@ public:
             throw std::runtime_error("dtype mismatch");
 
         size_t offset = compute_offset(indices);
-        return *reinterpret_cast<T*>(
-            static_cast<unsigned char*>(storage_->data()) + offset
-        );
+        return *reinterpret_cast<T*>(static_cast<unsigned char*>(storage_->data()) + offset);
     }
 
     template<typename T>
@@ -39,19 +41,29 @@ public:
             throw std::runtime_error("dtype mismatch");
 
         size_t offset = compute_offset(indices);
-        return *reinterpret_cast<const T*>(
-            static_cast<unsigned char*>(storage_->data()) + offset
-        );
+        return *reinterpret_cast<const T*>(static_cast<unsigned char*>(storage_->data()) + offset);
+    }
+
+    // Data 
+
+    template<typename T>
+    T* data() {
+        if (dtype_ != dtype_of<T>())
+            throw std::runtime_error("dtype mismatch");
+
+        return reinterpret_cast<T*>(static_cast<unsigned char*>(storage_->data()) + offset_);
+    }
+
+    template<typename T>
+    const T* data() const {
+        if (dtype_ != dtype_of<T>())
+            throw std::runtime_error("dtype mismatch");
+
+        return reinterpret_cast<const T*>(static_cast<unsigned char*>(storage_->data()) + offset_);
     }
 
     void* raw_data();
     const void* raw_data() const;
-
-    template<typename T>
-    T* data();
-
-    template<typename T>
-    const T* data() const;
 
     // Metadata 
 
@@ -62,12 +74,11 @@ public:
     std::shared_ptr<Storage> storage() const {return storage_;} // Return underlying storage
     size_t numel() const; // Return number of elements
     size_t n_dim() const {return shape_.size();} // Return number of dimensions
-
-
-
+    
 private:
     void compute_contiguous_strides(); // Compute strides for contiguous layout
     size_t compute_offset(const std::vector<int>& indices) const; // Compute offset in bytes for given indices
+    bool is_contiguous() const; // Check if tensor is contiguous in memory
 
 
 private:

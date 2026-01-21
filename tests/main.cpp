@@ -5,6 +5,7 @@
 int main() {
     Tensor x({4, 2});
     auto px = x.data<float>();
+    std::cout << "pointer px: " << px << "\n";
 
     for (int i = 0; i < 8; ++i)
         px[i] = i;
@@ -19,8 +20,11 @@ int main() {
         std::cout << "\n";
     }
 
-    Tensor y = x.slice(0, 1, 3);
-
+    Tensor y = x.slice(1, 1, 2);
+    std::cout << "y size: " << y.numel() << "\n";
+    Tensor y_contig = y.clone();
+    std::cout << "y_contig data pointer: " << y_contig.raw_data() << "\n";
+    
     std::cout << "x raw: " << x.raw_data() << "\n";
     std::cout << "y raw: " << y.raw_data() << "\n";
 
@@ -31,6 +35,9 @@ int main() {
 
     std::cout << "Dims x:" << x.n_dim() << "\n"; // should print 2  
     std::cout << "Dims y:" << y.n_dim() << "\n"; //
+
+    Tensor z = y.clone();
+    std::cout << "z data pointer: " << z.raw_data() << "\n";
 
     y.data<float>()[0] = 99;
     std::cout << x.data<float>()[2] << "\n";  // 99
