@@ -214,6 +214,30 @@ src/core/tensor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/core/tensor.cpp.s
 .PHONY : src/core/tensor.cpp.s
 
+src/shape/broadcast.o: src/shape/broadcast.cpp.o
+.PHONY : src/shape/broadcast.o
+
+# target to build an object file
+src/shape/broadcast.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/shape/broadcast.cpp.o
+.PHONY : src/shape/broadcast.cpp.o
+
+src/shape/broadcast.i: src/shape/broadcast.cpp.i
+.PHONY : src/shape/broadcast.i
+
+# target to preprocess a source file
+src/shape/broadcast.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/shape/broadcast.cpp.i
+.PHONY : src/shape/broadcast.cpp.i
+
+src/shape/broadcast.s: src/shape/broadcast.cpp.s
+.PHONY : src/shape/broadcast.s
+
+# target to generate assembly for a file
+src/shape/broadcast.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/shape/broadcast.cpp.s
+.PHONY : src/shape/broadcast.cpp.s
+
 tests/main.o: tests/main.cpp.o
 .PHONY : tests/main.o
 
@@ -257,6 +281,9 @@ help:
 	@echo "... src/core/tensor.o"
 	@echo "... src/core/tensor.i"
 	@echo "... src/core/tensor.s"
+	@echo "... src/shape/broadcast.o"
+	@echo "... src/shape/broadcast.i"
+	@echo "... src/shape/broadcast.s"
 	@echo "... tests/main.o"
 	@echo "... tests/main.i"
 	@echo "... tests/main.s"
