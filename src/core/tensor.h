@@ -4,6 +4,7 @@
 #include "core/device.h"
 #include "core/dtype.h"
 #include "core/storage.h"
+#include "shape/broadcast.h"
 
 
 class Tensor {
@@ -16,10 +17,14 @@ public:
             const std::vector<int>& shape,
             const std::vector<int>& strides,
             Dtype dtype); 
+
+    Tensor broadcast_to(const std::vector<int>& target_shape) const; // Return a new tensor broadcasted to target shape
     
     Tensor slice(int dim, int start, int end) const;  // Slice tensor along a dimension
 
     Tensor contiguous() const; // Return a contiguous copy of the tensor
+
+    bool is_contiguous() const; // Check if tensor is contiguous in memory
 
     Tensor clone() const; // Return a deep copy of the tensor
 
@@ -67,6 +72,8 @@ public:
 
     // Metadata 
 
+    
+
     const std::vector<int>& shape() const {return shape_;}    // Return shape vector
     const std::vector<int>& strides() const {return strides_;} // Return strides vector
     Dtype dtype() const {return dtype_;}  // Return data type
@@ -78,7 +85,6 @@ public:
 private:
     void compute_contiguous_strides(); // Compute strides for contiguous layout
     size_t compute_offset(const std::vector<int>& indices) const; // Compute offset in bytes for given indices
-    bool is_contiguous() const; // Check if tensor is contiguous in memory
 
 
 private:

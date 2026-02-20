@@ -6,6 +6,7 @@
 
 // 
 namespace shape {
-    std::vector<int> infer_broadcast_shape(const std::vector<int>& shape1, const std::vector<int>& shape2) {};
+    std::vector<int> infer_broadcast_shape(const std::vector<int>& shape1, const std::vector<int>& shape2);
+    
 }
 

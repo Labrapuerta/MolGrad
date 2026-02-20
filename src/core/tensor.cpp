@@ -37,6 +37,51 @@ void Tensor::compute_contiguous_strides() {
     }
 }
 
+Tensor Tensor::broadcast_to(const std::vector<int>& target_shape) const {
+    std::vector<int> infered_shape = shape::infer_broadcast_shape(shape_, target_shape);
+    std::cout << "Expected broadcast shape: ";
+    for (int dim : infered_shape) std::cout << dim << " ";
+    std::cout << std::endl;
+    // Maybe redundant check, inside of broadcast there's already a check for broadcast compatibility, but we can keep it for safety
+    if (infered_shape != target_shape) throw std::invalid_argument("Inferred broadcast shape does not match target shape");
+
+    int old_rank = shape_.size();
+    int new_rank = infered_shape.size();
+    std::vector<int> new_strides(new_rank);
+
+     ///////////  Testing
+    std::cout << "Old shape: ";
+    for (int dim : shape_) std::cout << dim << " ";
+    std::cout << "\nOld strides: ";
+    for (int s : strides_) std::cout << s << " ";
+    std::cout << std::endl;
+
+    std::cout << "Target shape: ";
+    for (int dim : target_shape) std::cout << dim << " ";
+    std::cout << std::endl;
+    ///// Testing ends lol
+
+    // A lot of comments cause I'm lost in here
+    for (int i = 0; i < new_rank; i++) {
+        // Corresponding dimension in the original shape (if it exists)
+        int new_dim = infered_shape[new_rank - 1 - i];
+        
+        int old_dim = (old_rank - 1 - i >= 0) ? shape_[old_rank - 1 - i] : 1; // If old rank is smaller, treat missing dims as 1
+
+        int old_stride = (old_rank - 1 - i >= 0) ? strides_[old_rank - 1 - i] : 0; // If old rank is smaller, missing dims have stride 0
+
+        if (new_dim == old_dim) {
+            new_strides[new_rank - 1 - i] = old_stride; // Same, keep
+        } else if (old_dim == 1) {
+            new_strides[new_rank - 1 - i] = 0; // Broadcasted dimension, stride becomes 0
+        } else {
+            throw std::invalid_argument("Shapes cannot be broadcasted");
+        }
+    }
+
+    return Tensor(storage_, offset_, infered_shape, new_strides, dtype_); // New tensor with broadcasted shape and strides
+}
+
 Tensor Tensor::slice(int dim, int start, int end) const {
     // Validate inputs
     if (dim < 0 || dim >= shape_.size()) throw std::runtime_error("slice: invalid dimension");
@@ -67,7 +112,6 @@ Tensor Tensor::contiguous() const {
 Tensor Tensor::clone() const {   // clone will always crate a new storage
     Tensor out(shape_, dtype_, device());   // New tensor with same shape and dtype
     if (is_contiguous()) {
-        std::cout << "Tensor is contgiuous" << std::endl;
         size_t bytes = numel() * dtype_size(dtype_);
         std::memcpy(out.raw_data(), this->raw_data(), bytes);  // Direct copy if both are contiguous
         return out;
