@@ -142,6 +142,30 @@ test_tensor/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_tensor.dir/build.make CMakeFiles/test_tensor.dir/build
 .PHONY : test_tensor/fast
 
+src/backend/cpu/cpu_elementwise.o: src/backend/cpu/cpu_elementwise.cpp.o
+.PHONY : src/backend/cpu/cpu_elementwise.o
+
+# target to build an object file
+src/backend/cpu/cpu_elementwise.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/backend/cpu/cpu_elementwise.cpp.o
+.PHONY : src/backend/cpu/cpu_elementwise.cpp.o
+
+src/backend/cpu/cpu_elementwise.i: src/backend/cpu/cpu_elementwise.cpp.i
+.PHONY : src/backend/cpu/cpu_elementwise.i
+
+# target to preprocess a source file
+src/backend/cpu/cpu_elementwise.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/backend/cpu/cpu_elementwise.cpp.i
+.PHONY : src/backend/cpu/cpu_elementwise.cpp.i
+
+src/backend/cpu/cpu_elementwise.s: src/backend/cpu/cpu_elementwise.cpp.s
+.PHONY : src/backend/cpu/cpu_elementwise.s
+
+# target to generate assembly for a file
+src/backend/cpu/cpu_elementwise.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/backend/cpu/cpu_elementwise.cpp.s
+.PHONY : src/backend/cpu/cpu_elementwise.cpp.s
+
 src/core/device.o: src/core/device.cpp.o
 .PHONY : src/core/device.o
 
@@ -214,6 +238,30 @@ src/core/tensor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/core/tensor.cpp.s
 .PHONY : src/core/tensor.cpp.s
 
+src/ops/elementwise.o: src/ops/elementwise.cpp.o
+.PHONY : src/ops/elementwise.o
+
+# target to build an object file
+src/ops/elementwise.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/ops/elementwise.cpp.o
+.PHONY : src/ops/elementwise.cpp.o
+
+src/ops/elementwise.i: src/ops/elementwise.cpp.i
+.PHONY : src/ops/elementwise.i
+
+# target to preprocess a source file
+src/ops/elementwise.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/ops/elementwise.cpp.i
+.PHONY : src/ops/elementwise.cpp.i
+
+src/ops/elementwise.s: src/ops/elementwise.cpp.s
+.PHONY : src/ops/elementwise.s
+
+# target to generate assembly for a file
+src/ops/elementwise.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/ops/elementwise.cpp.s
+.PHONY : src/ops/elementwise.cpp.s
+
 src/shape/broadcast.o: src/shape/broadcast.cpp.o
 .PHONY : src/shape/broadcast.o
 
@@ -272,6 +320,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... core"
 	@echo "... test_tensor"
+	@echo "... src/backend/cpu/cpu_elementwise.o"
+	@echo "... src/backend/cpu/cpu_elementwise.i"
+	@echo "... src/backend/cpu/cpu_elementwise.s"
 	@echo "... src/core/device.o"
 	@echo "... src/core/device.i"
 	@echo "... src/core/device.s"
@@ -281,6 +332,9 @@ help:
 	@echo "... src/core/tensor.o"
 	@echo "... src/core/tensor.i"
 	@echo "... src/core/tensor.s"
+	@echo "... src/ops/elementwise.o"
+	@echo "... src/ops/elementwise.i"
+	@echo "... src/ops/elementwise.s"
 	@echo "... src/shape/broadcast.o"
 	@echo "... src/shape/broadcast.i"
 	@echo "... src/shape/broadcast.s"

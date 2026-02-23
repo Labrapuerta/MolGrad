@@ -39,27 +39,12 @@ void Tensor::compute_contiguous_strides() {
 
 Tensor Tensor::broadcast_to(const std::vector<int>& target_shape) const {
     std::vector<int> infered_shape = shape::infer_broadcast_shape(shape_, target_shape);
-    std::cout << "Expected broadcast shape: ";
-    for (int dim : infered_shape) std::cout << dim << " ";
-    std::cout << std::endl;
     // Maybe redundant check, inside of broadcast there's already a check for broadcast compatibility, but we can keep it for safety
     if (infered_shape != target_shape) throw std::invalid_argument("Inferred broadcast shape does not match target shape");
 
     int old_rank = shape_.size();
     int new_rank = infered_shape.size();
     std::vector<int> new_strides(new_rank);
-
-     ///////////  Testing
-    std::cout << "Old shape: ";
-    for (int dim : shape_) std::cout << dim << " ";
-    std::cout << "\nOld strides: ";
-    for (int s : strides_) std::cout << s << " ";
-    std::cout << std::endl;
-
-    std::cout << "Target shape: ";
-    for (int dim : target_shape) std::cout << dim << " ";
-    std::cout << std::endl;
-    ///// Testing ends lol
 
     // A lot of comments cause I'm lost in here
     for (int i = 0; i < new_rank; i++) {

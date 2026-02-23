@@ -1,10 +1,27 @@
 #include "core/tensor.h"
 #include "shape/broadcast.h"
+#include "ops/elementwise.h"
 #include <iostream>
 #include <cassert>
 
+
 void print_shape(const Tensor& t) {
     for (int d : t.shape()) std::cout << d << " ";
+    std::cout << "\n";
+}
+
+void print_tensor(const Tensor& t) {
+    std::vector<int> idx(t.n_dim(), 0);
+    size_t total_elements = t.numel();
+    for (size_t i = 0; i < total_elements; ++i) {
+        std::cout << t.at<float>(idx) << " ";
+        // Increment index
+        for (int d = static_cast<int>(t.n_dim()) - 1; d >= 0; --d) {
+            idx[d]++;
+            if (idx[d] < t.shape()[d]) break;
+            idx[d] = 0;
+        }
+    }
     std::cout << "\n";
 }
 
@@ -121,4 +138,24 @@ int main() {
 
 
     std::cout << "\nALL TESTS PASSED \n";
+
+    std::cout << "Tensor a:\n";
+    print_tensor(a);
+    std::cout << "Tensor b (broadcast view of a):\n";
+    print_tensor(b);
+
+    // Ops testing
+    std::cout << "\n=== OPERATION TEST ===\n";
+    Tensor d({3,4});
+    auto pd = d.data<float>();
+    for (int i = 0; i < 12; ++i) pd[i] = static_cast<float>(i); 
+    Tensor e = ops::mul(b, d);  // b is broadcasted to shape of d
+    std::cout << "Summing b and d to get e:\n";
+    std::cout << "Tensor b:\n";
+    print_tensor(b);
+    std::cout << "Tensor d:\n";
+    print_tensor(d);
+    std::cout << "Tensor e:\n";
+    print_tensor(e);
+
 }

@@ -11,6 +11,8 @@ add_library(core
     src/core/device.cpp
     src/core/storage.cpp
     src/shape/broadcast.cpp
+    src/ops/elementwise.cpp
+    src/backend/cpu/cpu_elementwise.cpp
 )
 
 target_include_directories(core
