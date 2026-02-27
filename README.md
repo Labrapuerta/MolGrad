@@ -28,7 +28,8 @@ but as a platform for experimentation, learning, and scientific exploration.
 - [x] Tensor implementation with storage, slices. 
 - [x] Memory management and layout (contiguous, strides, clone).
 - [x] Implemented Broadcasting
-- [] Basic tensor operations (add, multiply, matmul) in CPU. 
+- [x] Basic elementwise tensor operations (add, subtract, multiply, etc...) in CPU. 
+- [] Matrix multiplication and reduction operations in CPU.
 - [] Python bindings via Pybind11
 - [] CPU and CUDA tensor operations
 - [] Automatic differentiation engine with backward graph construction
